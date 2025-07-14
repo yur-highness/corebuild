@@ -2,7 +2,7 @@ const products = [
   {
     id: 1,
     name: "AMD Ryzen 9 7950X",
-    category: "CPU",
+    category: "CPUs",
     description: "16-core, 32-thread processor with high performance",
     price: "$599.99",
     originalPrice: "$699.99",
@@ -13,7 +13,7 @@ const products = [
   {
     id: 2,
     name: "NVIDIA RTX 4080 Super",
-    category: "Graphics Card",
+    category: "Graphics Cards",
     description: "Next-gen graphics card with ray tracing support",
     price: "$999.99",
     originalPrice: "$1199.99",
@@ -24,7 +24,7 @@ const products = [
   {
     id: 3,
     name: "ASUS ROG Strix X670E",
-    category: "Motherboard",
+    category: "Motherboards",
     description: "High-performance motherboard with PCIe 5.0 support",
     price: "$449.99",
     originalPrice: null,
@@ -57,7 +57,7 @@ const products = [
   {
     id: 6,
     name: "Fractal Design Meshify C",
-    category: "Case",
+    category: "Cases",
     description: "Mid-tower case with excellent airflow",
     price: "$89.99",
     originalPrice: null,

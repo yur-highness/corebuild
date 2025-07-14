@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ShoppingCart, Star, Plus, Minus, ArrowLeft } from "lucide-react";
-import { useCart } from "../context/CardContext";
+import { useCart } from "../context/CartContext";
 
 const products = [
   {

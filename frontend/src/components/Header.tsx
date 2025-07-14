@@ -1,10 +1,9 @@
-import { Search, ShoppingCart, Package,BookOpen  } from "lucide-react";
+import {  ShoppingCart, Package,BookOpen, Newspaper, Heart, User  } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { createContext, type ReactNode, useState } from "react";
-
-import  { useCart } from "../context/CardContext";
+import SearchComponent from "./animated-glowing-serach-bar";
+import  { useCart } from "../context/CartContext";
 
 type CartItem = {
   id: number;
@@ -80,11 +79,26 @@ export const Header = () => {
   const handleBlogClick = () => {
     navigate("/blog");
   };
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
+  const handleSignupClick = () => {
+    navigate("/signup");
+  };
+
+  const handleWishlistClick = () => {
+    navigate("/wishlist");
+  };
+
+  const handleNewsClick = () => {
+    navigate("/news");
+  };
 
   return (
 
     <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-52 px-1 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
               <div 
@@ -98,16 +112,21 @@ export const Header = () => {
           
           <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input 
-                placeholder="Search hardware..." 
-                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-              />
+            
+              <SearchComponent />
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-                  <Button 
+          <div className="flex items-center space-x-2 ">
+              <Button 
+              variant="ghost" 
+              onClick={handleNewsClick}
+              className="text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <Newspaper className="h-4 w-4" />
+              <span className="hidden sm:inline">News</span>
+            </Button>
+            <Button 
               variant="ghost" 
               onClick={handleBlogClick}
               className="text-white hover:bg-white/10 flex items-center gap-2"
@@ -115,6 +134,16 @@ export const Header = () => {
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Blog</span>
             </Button>
+            <Button 
+              variant="ghost" 
+              onClick={handleWishlistClick}
+              className="text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <Heart className="h-4 w-4" />
+              <span className="hidden sm:inline">Wishlist</span>
+            </Button>
+          
+                 
                <Button 
               variant="ghost" 
               size="icon" 
@@ -129,6 +158,20 @@ export const Header = () => {
                   {totalItems}
                 </span>
               )}
+            </Button>
+              <Button 
+              variant="ghost" 
+              onClick={handleLoginClick}
+              className="text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Login</span>
+            </Button>
+            <Button 
+              onClick={handleSignupClick}
+              className="bg-blue-600 hover:bg-blue-700 text-white hidden sm:flex"
+            >
+              Sign Up
             </Button>
           </div>
         </div>

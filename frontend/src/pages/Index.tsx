@@ -5,6 +5,7 @@ import { Header } from "../components/Header";
 import { Features } from "../components/Features";
 import { Newsletter } from "../components/Newsletter";
 import { Footer } from "../components/Footer";
+import { LatestProducts } from "@/components/LatestProduct";
 
 /**
  * The home page of the application.
@@ -22,6 +23,7 @@ const Index = () => {
       <Hero />
       <CategoryNav />
       <ProductGrid />
+      <LatestProducts />
       <Features />
       <Newsletter />
       <Footer />

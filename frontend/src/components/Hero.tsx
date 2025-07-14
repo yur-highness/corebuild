@@ -1,24 +1,21 @@
 import { Button } from "../components/ui/button";
 import VaporizeTextCycle, { Tag } from "../components/vapour-text-effect";
-import { ChromeGrid } from "../components/chrome-grid";
+import {MacbookScroll} from "../components/mac-book";
 
 export const Hero = () => {
   return (
-    <section className="relative py-16 md:py-20 px-2 md:px-4 min-h-[70vh] md:h-screen overflow-hidden">
-      {/* Chrome Grid Background */}
-      <div className="absolute inset-0 z-0">
-        <ChromeGrid />
-      </div>
+    <section className="relative md:py-20 px-2 md:px-4  min-h-[90vh] md:h-screen overflow-hidden ">
+     
       
       {/* Content Overlay */}
-      <div className="relative z-10 container mx-auto text-center h-full flex items-center justify-center">
+      <div className="relative z-10 bottom-72 container mx-auto text-center h-full flex items-center justify-center">
         <div className="max-w-4xl mx-auto w-full px-2">
           <div className="h-24 md:h-32 mb-4 md:mb-6 flex items-center justify-center">
             <VaporizeTextCycle
               texts={["Build Your Dream", "Gaming Rig", "CoreBuild"]}
               font={{
                 fontFamily: "Inter, sans-serif",
-                fontSize: "32px", // mobile
+                fontSize: "82px", // mobile
                 fontWeight: 700
               }}
               color="rgb(255, 255, 255)"
@@ -58,6 +55,17 @@ export const Hero = () => {
             </Button>
           </div>
         </div>
+      </div>
+       <div className="absolute inset-0 z-0">
+     
+        <div className="overflow-hidden dark:bg-[#0B0B0F] bg-white w-full">
+      <MacbookScroll
+       
+        
+        src={`https://www.asus.com/campaign/powered-by-asus/upload/scenario/20241115190637_pic0.jpg`}
+        showGradient={false}
+      />
+    </div>
       </div>
     </section>
   );

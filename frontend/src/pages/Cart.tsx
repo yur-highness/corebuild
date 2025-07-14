@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Separator } from "../components/ui/separator";
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
-import { useCart } from "../context/CardContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { useCart } from "@/context/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import { CouponSection } from "@/components/cart/CouponSection";
 
 export const CartPage = () => {
   const navigate = useNavigate();
   const { items, updateQuantity, removeFromCart, clearCart, getTotalPrice } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -40,14 +42,24 @@ export const CartPage = () => {
     }, 2000);
   };
 
+  const handleCouponApply = (discount: number, couponCode: string) => {
+    setAppliedCoupon({ code: couponCode, discount });
+  };
+
+  const handleProductClick = (productId: number) => {
+    navigate(`/product/${productId}`);
+  };
+
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 100 ? 0 : 9.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const couponDiscount = appliedCoupon ? (subtotal * appliedCoupon.discount) / 100 : 0;
+  const discountedSubtotal = subtotal - couponDiscount;
+  const shipping = discountedSubtotal > 100 ? 0 : 9.99;
+  const tax = discountedSubtotal * 0.08;
+  const total = discountedSubtotal + shipping + tax;
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black ">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
         <Header />
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-md mx-auto text-center">
@@ -58,15 +70,13 @@ export const CartPage = () => {
             </p>
             <Button 
               onClick={() => navigate("/")}
-              className="bg-gradient-to-r from-gray-600 to-blue-900 hover:from-blue-500 hover:to-gray-700 button"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               Continue Shopping
             </Button>
           </div>
         </div>
-        <div className="mt-52">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     );
   }
@@ -112,18 +122,26 @@ export const CartPage = () => {
               <Card key={`${item.id}-${item.variant || 'default'}`} className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
+                    <div 
+                      className="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0 cursor-pointer"
+                      onClick={() => handleProductClick(item.id)}
+                    >
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>
                     
                     <div className="flex-1 space-y-3">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                         <div>
-                          <h3 className="font-semibold text-white text-lg">{item.name}</h3>
+                          <h3 
+                            className="font-semibold text-white text-lg cursor-pointer hover:text-blue-400 transition-colors"
+                            onClick={() => handleProductClick(item.id)}
+                          >
+                            {item.name}
+                          </h3>
                           {item.variant && (
                             <p className="text-slate-400 text-sm">{item.variant}</p>
                           )}
@@ -179,7 +197,12 @@ export const CartPage = () => {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
+            <CouponSection 
+              onCouponApply={handleCouponApply}
+              appliedCoupon={appliedCoupon}
+            />
+
             <Card className="bg-slate-800/50 border-slate-700 sticky top-24">
               <CardHeader>
                 <CardTitle className="text-white">Order Summary</CardTitle>
@@ -190,6 +213,13 @@ export const CartPage = () => {
                     <span>Subtotal ({items.reduce((total, item) => total + item.quantity, 0)} items)</span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
+                  
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-400">
+                      <span>Coupon ({appliedCoupon.code})</span>
+                      <span>-${couponDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
                   
                   <div className="flex justify-between text-slate-300">
                     <span>Shipping</span>
@@ -223,8 +253,7 @@ export const CartPage = () => {
                 
                 <div className="space-y-3 pt-4">
                   <Button
-                    className="w-full bg-gradient-to-r from-gray-500 to-slate-500 hover:from-slate-200 hover:to-gray-300
-                    hover:text-blue-500"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                     onClick={handleCheckout}
                     disabled={isCheckingOut}
                   >
@@ -234,7 +263,7 @@ export const CartPage = () => {
                   
                   <Button
                     variant="outline"
-                    className="w-full border-slate-600 text-white hover:bg-slate-200 hover:text-slate-900 "
+                    className="w-full border-slate-600 text-white hover:bg-slate-700"
                     onClick={() => navigate("/")}
                   >
                     Continue Shopping
