@@ -130,8 +130,8 @@ export default function VaporizeTextCycle({
   }), []);
 
   const canvasStyle = useMemo(() => ({
-    minWidth: "30px",
-    minHeight: "20px",
+    minWidth: "60px",
+    minHeight: "30px",
     pointerEvents: "none" as const,
   }), []);
 
@@ -482,7 +482,7 @@ const renderCanvas = ({
   particlesRef,
   globalDpr,
   currentTextIndex,
-  transformedDensity,
+  
 }: {
   framerProps: VaporizeTextCycleProps;
   canvasRef: React.RefObject<HTMLCanvasElement>;
