@@ -4,9 +4,9 @@ import UserModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 
 export const register = async (req, res) => {
-    const {name, email, password} = req.body;
+    const {firstName, lastName, email, password} = req.body;
      //validationsv
-    if(!name || !email || !password) {
+    if(!firstName || !lastName || !email || !password) {
         return res.status(400).json({
             success: false,
             message: "Please enter all fields"
@@ -28,14 +28,15 @@ export const register = async (req, res) => {
         
         const hashedPassword = await bcrpypt.hash(password, 13);
         const user = await UserModel.create({
-            name,
+            firstName,
+            lastName,
             email,
             password: hashedPassword
         });
 
         await user.save();
 
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET_KEY, {
             expiresIn: "6d"
         });
 
@@ -108,7 +109,7 @@ export const login = async (req, res) => {
             });
         }
         
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET_KEY, {
             expiresIn: "6d"
         });
         res.cookie("token", token, {
@@ -163,7 +164,7 @@ export const logout = async (req, res) => {
 export const sendVerifyOtp = async (req, res) => {
 
      const {userId} = req.body;
-    const user = await UserModel.findById(userId);
+     const user = await UserModel.findById(userId);
     try{
         //validations
         if(user.isAccountVerified) {
@@ -204,10 +205,12 @@ export const sendVerifyOtp = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
       const {userId, otp} = req.body;
-    const user = await UserModel.findById(userId);
-    try{
-      
+      const user = await UserModel.findById(userId);
 
+
+
+
+    try{
         if(!userId || !otp) {
         return res.status(400).json({
             success: false,

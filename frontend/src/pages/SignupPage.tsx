@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useContext  } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/components/Header";
 import { Eye, EyeOff, Package } from "lucide-react";
-import { toast } from "sonner";
+import {  toast } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
+import { AppContext } from "@/context/AppContext";
+import axios from "axios";
+ 
+
 
 
 export const SignupPage = () => {
@@ -23,7 +28,7 @@ export const SignupPage = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  // const { toast } = useToast();
+  const {backendUrl,setIsLoggedIn} = useContext(AppContext) || {};
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -33,53 +38,79 @@ export const SignupPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     setIsLoading(true);
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password Mismatch",
+      toast.error("MisMatch",{
         description: "Passwords do not match.",
-        variant: "destructive",
       });
       setIsLoading(false);
       return;
     }
 
     if (!agreeToTerms) {
-      toast({
-        title: "Terms Required",
+      toast.error("check", {
         description: "Please agree to the terms and conditions.",
-        variant: "destructive",
       });
       setIsLoading(false);
       return;
     }
 
     // Simulate signup process
-    setTimeout(() => {
-      if (formData.firstName && formData.lastName && formData.email && formData.password) {
-        toast({
-          title: "Account Created",
-          description: "Welcome to CoreBuild! Please sign in to continue.",
+    setTimeout(async() => {
+      if (!formData.firstName && !formData.lastName && !formData.email && !formData.password)
+         {
+        toast("required",{
+        
+          description: "fill all fields",
         });
         navigate("/login");
-      } else {
-        toast({
-          title: "Signup Failed",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
+      } 
+      else
+         {
+        try
+        {
+      const {data}= await axios.post(`${backendUrl}/register`,{
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+     if(data.success){
+      if (setIsLoggedIn) setIsLoggedIn(true);
+      toast.success("registration Successfull", {
+        description: "hello there!",
+      });
+      navigate("/login");
+     }
+     else{
+      toast.error("Login Failed", {
+        description: "",
+       
+      });
+     }
+        }
+        catch(error){
+          toast.error("Login Failed", {
+            description: `error:${error}`,
+           
+          });
+        }
       }
       setIsLoading(false);
     }, 1000);
+
+
+    
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
       <Header />
+      <Toaster />
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
           <CardHeader className="text-center">

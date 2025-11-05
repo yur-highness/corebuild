@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Header } from "@/components/Header";
 import { Eye, EyeOff, Package } from "lucide-react";
-import{Toaster} from "@/components/ui/sonner"
-
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import { AppContext } from "@/context/AppContext";
+import axios from "axios";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -15,33 +23,57 @@ export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext) || {};
 
   const handleSubmit = async (e: React.FormEvent) => {
+    //preventing default form submission behavior
     e.preventDefault();
+    //for sending cookies to backend via axios
+    axios.defaults.withCredentials = true;
+
     setIsLoading(true);
 
     // Simulate login process
-    setTimeout(() => {
-      if (email && password) {
-        Toaster({
-          title: "Login Successful",
-          description: "Welcome back to CoreBuild!",
-        });
-        navigate("/");
-      } else {
-        Toaster({
-          title: "Login Failed",
+    setTimeout(async () => {
+      if (!email && !password) {
+        toast.error("Login Failed", {
           description: "Please fill in all fields.",
-          variant: "destructive",
         });
+      } 
+      else {
+        try {
+          const { data } = await axios.post(`${backendUrl}/login`, {
+            email,
+            password,
+          });
+          if (data.success) {
+            if (setIsLoggedIn) setIsLoggedIn(true);
+            toast.success("Login Successful", {
+              description: "Welcome back to CoreBuild!",
+            });
+            navigate("/");
+          } else {
+            toast.error("Login Failed", {
+              description: "Please fill in all fields.",
+            });
+          }
+          setIsLoading(false);
+        } 
+        catch (err) {
+          toast.error("Login Failed", {
+            description: `error:${err}`,
+          });
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
     }, 1000);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
+      <Toaster />
       <Header />
+
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
           <CardHeader className="text-center">

@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(cors({credentials: true,}));
 
 app.get("/", (req, res) => {
-    res.send("API is running");
+    res.send("u   are  a  ninja  and  your  under  a  genjutsu");
 });
 
 app.use("/api/auth", authRouter)
