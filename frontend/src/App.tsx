@@ -17,6 +17,7 @@ import { WishlistProvider } from "./context/WishListContext.tsx";
 import { CategoryProvider } from "./context/CategoryContext.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import EmailVerify from "./pages/EmailVerify.tsx";
+import Profile from "./pages/Profile.tsx";
 import { AppContextProvider } from "./context/AppContext.tsx";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/news" element={<HardwareNews />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/profile" element={<Profile />} />
 
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/email-verify" element={<EmailVerify />} />

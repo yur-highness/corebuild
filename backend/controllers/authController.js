@@ -53,7 +53,7 @@ export const register = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: email,
             subject: "Welcome to CoreBuild",
-            text: `Hi ${name},\n\nWelcome to CoreBuild! We're excited to have you join our community.\n\nBest regards,\nCoreBuild Team`
+            text: `Hi ${firstName},\n\nWelcome to CoreBuild! We're excited to have you join our community.\n\nBest regards,\nCoreBuild Team`
         };
 
         await transporter.sendMail(mailOptions);
@@ -120,9 +120,16 @@ export const login = async (req, res) => {
         });
 
         return res.status(200).json({
-            success: true,
-            message: "User logged in successfully"
-        });
+      success: true,
+      message: "User logged in successfully",
+      userData: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role, // 🔥 This is what frontend needs
+      },
+    });
     }
     catch(error) {
         console.log(error);
@@ -183,7 +190,7 @@ export const sendVerifyOtp = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: "Verify your account",
-            text: `Hi ${user.name},\n\nPlease use the following OTP to verify your account: ${otp}\n\nBest regards,\nCoreBuild Team`
+            text: `Hi ${user.firstName},\n\nPlease use the following OTP to verify your account: ${otp}\n\nBest regards,\nCoreBuild Team`
         };
         await transporter.sendMail(mailOptions);
 
@@ -313,7 +320,7 @@ export const sendResetOtp = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: "OTP for password Reset",
-            text: `Hi ${user.name},\n\nPlease use the following OTP to reset your password: ${otp}\n\nBest regards,\nCoreBuild Team`
+            text: `Hi ${user.firstName},\n\nPlease use the following OTP to reset your password: ${otp}\n\nBest regards,\nCoreBuild Team`
         };
         await transporter.sendMail(mailOptions);
         

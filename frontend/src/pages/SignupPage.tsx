@@ -28,7 +28,7 @@ export const SignupPage = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const {backendUrl,setIsLoggedIn} = useContext(AppContext) || {};
+  const {backendUrl,setIsLoggedIn,getUserData} = useContext(AppContext) || {};
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -73,7 +73,7 @@ export const SignupPage = () => {
          {
         try
         {
-      const {data}= await axios.post(`${backendUrl}/register`,{
+      const {data}= await axios.post(`${backendUrl}/api/auth/register`,{
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
@@ -81,8 +81,9 @@ export const SignupPage = () => {
       });
      if(data.success){
       if (setIsLoggedIn) setIsLoggedIn(true);
+      if(getUserData) await getUserData();
       toast.success("registration Successfull", {
-        description: "hello there!",
+        description: "hello there plz login now!",
       });
       navigate("/login");
      }

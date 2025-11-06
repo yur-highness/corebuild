@@ -1,9 +1,13 @@
 import {  ShoppingCart, Package,BookOpen, Newspaper, Heart, User  } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { createContext, type ReactNode, useState } from "react";
+import { createContext, type ReactNode, use, useContext, useState } from "react";
 import SearchComponent from "./animated-glowing-serach-bar";
 import  { useCart } from "../context/CartContext";
+import { AppContext } from "../context/AppContext";
+import { ChevronDown } from "lucide-react";
+import axios from "axios";
+
 
 type CartItem = {
   id: number;
@@ -24,6 +28,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+
   
 
   const addToCart = (item: CartItem) => {
@@ -65,8 +70,17 @@ export const Header = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
   const totalItems = getTotalItems();
+  const {userData,backendUrl,setIsLoggedIn,setUserData} = useContext(AppContext)||{} ;
+const [settingsOpen, setSettingsOpen] = useState(false);
   
+  const handleSettingsClick = () => {
+    setSettingsOpen((prev) => !prev);
+  };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+    setSettingsOpen(false);
+  };
 
   const handleCartClick = () => {
     navigate("/cart");
@@ -95,6 +109,25 @@ export const Header = () => {
     navigate("/news");
   };
 
+
+  const  handlelogout  = async () => {
+    try{
+      axios.defaults.withCredentials = true;
+      const  {data} = await axios.post(`${backendUrl}/api/auth/logout`);
+       if (data.success) {
+      setIsLoggedIn?.(false);
+      setUserData?.(null);
+    }
+
+    }
+    catch(error){
+      console.log(error);
+    }
+    navigate("/");
+  };
+
+ 
+
   return (
 
 <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
@@ -108,13 +141,18 @@ export const Header = () => {
           <Package className="h-8 w-8 text-blue-400" />
           <span className="text-2xl md:text-xl sm:text-md font-bold text-white">CoreBuild</span>
         </div>
+             <p>Hello, {userData?.firstName ?? "Guest"}!</p>
       </div>
       <div className="sm:max-w-1/2 m-8 md:flex md:max-w-sm mt-2.5 mb-2.5 mr-4.5 items-center space-x-4 flex-1 max-w-md mx-8">
         <div className="relative flex-1">
           <SearchComponent />
         </div>
+
+
       </div>
+     
       <div className="flex items-center space-x-2 lg:flex-row md:flex-wrap md:space-x-4 sm:flex-wrap sm:space-x-2">
+      
         <Button 
           variant="ghost" 
           onClick={handleNewsClick}
@@ -152,20 +190,62 @@ export const Header = () => {
             </span>
           )}
         </Button>
-        <Button 
-          variant="ghost" 
-          onClick={handleLoginClick}
-          className="text-white hover:bg-white/10 flex items-center gap-2"
-        >
-          <User className="h-4 w-4" />
-          <span className="sm:inline">Login</span>
-        </Button>
-        <Button 
-          onClick={handleSignupClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white  sm:flex"
-        >
-          Sign Up
-        </Button>
+        {userData?.role === "admin" && (
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/admin")}
+            className="text-white hover:bg-white/10 flex items-center gap-2"
+          >
+            <User className="h-4 w-4" />
+            <span className=" sm:inline">Admin</span>
+          </Button>
+        )}
+       {!userData ? (
+          <>
+            <Button 
+              variant="ghost" 
+              onClick={handleLoginClick}
+              className="text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <User className="h-4 w-4" />
+              <span className="sm:inline">Login</span>
+            </Button>
+            <Button 
+              onClick={handleSignupClick}
+              className="bg-blue-600 hover:bg-blue-700 text-white  sm:flex"
+            >
+              Sign Up
+            </Button>
+          </>
+        ) : (
+          <div className="relative">
+          <Button
+            variant="ghost"
+            onClick={handleSettingsClick}
+            className="text-white hover:bg-white/10 flex items-center gap-2"
+          >
+            <User className="h-4 w-4" />
+            <span className="sm:inline">Settings</span>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+          {settingsOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-transparent border-2 rounded shadow-lg z-50 cursor-pointer">
+              <button
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black  cursor-pointer"
+                onClick={handleProfileClick}
+              >
+                Profile
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black  cursor-pointer"
+                onClick={handlelogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}  
+        </div>
+        )}
       </div>
     </div>
   </div>

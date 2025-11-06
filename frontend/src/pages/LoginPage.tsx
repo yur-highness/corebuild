@@ -23,51 +23,60 @@ export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedIn } = useContext(AppContext) || {};
+
+
+  const { backendUrl, setIsLoggedIn, setRole, getUserData } = useContext(AppContext) || {};
 
   const handleSubmit = async (e: React.FormEvent) => {
-    //preventing default form submission behavior
-    e.preventDefault();
-    //for sending cookies to backend via axios
-    axios.defaults.withCredentials = true;
+  e.preventDefault();
+  setIsLoading(true);
+  axios.defaults.withCredentials = true;
 
-    setIsLoading(true);
+  if (!email || !password) {
+    toast.error("Login Failed", { description: "Please fill in all fields." });
+    setIsLoading(false);
+    return;
+  }
 
-    // Simulate login process
-    setTimeout(async () => {
-      if (!email && !password) {
-        toast.error("Login Failed", {
-          description: "Please fill in all fields.",
-        });
-      } 
-      else {
-        try {
-          const { data } = await axios.post(`${backendUrl}/login`, {
-            email,
-            password,
-          });
-          if (data.success) {
-            if (setIsLoggedIn) setIsLoggedIn(true);
-            toast.success("Login Successful", {
-              description: "Welcome back to CoreBuild!",
-            });
-            navigate("/");
-          } else {
-            toast.error("Login Failed", {
-              description: "Please fill in all fields.",
-            });
-          }
-          setIsLoading(false);
-        } 
-        catch (err) {
-          toast.error("Login Failed", {
-            description: `error:${err}`,
-          });
-          setIsLoading(false);
-        }
+  try {
+    const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
+
+    console.log("Login response:", data);
+
+    if (data.success) {
+      setIsLoggedIn?.(true);
+
+      // ✅ Extract role safely from any structure
+      const role = data.user?.role || data.userData?.role || data.role || "user";
+      setRole?.(role);
+
+      toast.success("Login Successful", {
+        description: `Welcome back ${role === "admin" ? "Admin" : "User"}!`,
+      });
+
+      // ✅ Navigate immediately based on backend role
+      if (role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
       }
-    }, 1000);
-  };
+
+      // ✅ Fetch updated user details *after* redirect
+      getUserData?.();
+    } else {
+      toast.error("Login Failed", {
+        description: data.message || "Invalid credentials.",
+      });
+    }
+  } catch (error: any) {
+    console.error("Login error:", error);
+    toast.error("Login Failed", {
+      description: error.response?.data?.message || "Something went wrong.",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
@@ -86,6 +95,7 @@ export const LoginPage = () => {
               Sign in to your account to continue
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -102,6 +112,7 @@ export const LoginPage = () => {
                   required
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white">
                   Password
@@ -131,6 +142,7 @@ export const LoginPage = () => {
                   </Button>
                 </div>
               </div>
+
               <div className="flex items-center justify-between">
                 <Link
                   to="/forgot-password"
@@ -139,6 +151,7 @@ export const LoginPage = () => {
                   Forgot password?
                 </Link>
               </div>
+
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700"
@@ -147,6 +160,7 @@ export const LoginPage = () => {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
+
             <div className="mt-6 text-center">
               <p className="text-slate-400">
                 Don't have an account?{" "}
