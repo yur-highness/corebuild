@@ -11,7 +11,7 @@ export const ProductGrid = () => {
   const { activeCategory } = useCategory();
   
   const filteredProducts = activeCategory === "All Products" 
-  ? products.map(product => ({ ...product, image: product.image[0] })) 
+  ? products.map(product => ({ ...product, images: product.image[0] })) 
   : products.filter(product => product.category === activeCategory).map(product => ({ ...product, image: product.image[0] }));
 
   return (

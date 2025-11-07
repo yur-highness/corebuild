@@ -7,7 +7,7 @@ const latestProducts = [
     category: "CPU",
     price: "$429.99",
     originalPrice: "$499.99",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",
+    image: ["https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop",],
     rating: 4.8,
     inStock: true,
   },
@@ -17,7 +17,7 @@ const latestProducts = [
     category: "Graphics Card",
     price: "$399.99",
     originalPrice: null,
-    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop",
+    image: ["https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop",],
     rating: 4.5,
     inStock: true,
   },
@@ -27,7 +27,7 @@ const latestProducts = [
     category: "Motherboard",
     price: "$199.99",
     originalPrice: "$229.99",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop",
+    image: ["https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop",],
     rating: 4.6,
     inStock: true,
   },
@@ -37,7 +37,7 @@ const latestProducts = [
     category: "Memory",
     price: "$159.99",
     originalPrice: null,
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop",
+    image: ["https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop",],
     rating: 4.7,
     inStock: true,
   },
@@ -45,7 +45,7 @@ const latestProducts = [
 
 export const LatestProducts = () => {
   return (
-    <section className="py-16 px-4 bg-gradient-to-r from-slate-900/50 to-slate-800/50">
+    <section className="py-16 px-4 bg-linear-to-r from-slate-900/50 to-slate-800/50">
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">Latest Arrivals</h2>

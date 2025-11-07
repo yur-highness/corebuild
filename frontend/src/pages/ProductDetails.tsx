@@ -118,7 +118,7 @@ export const ProductPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
+    <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-black">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
@@ -146,7 +146,7 @@ export const ProductPage = () => {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                  className={`shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
                     selectedImage === index ? 'border-blue-500' : 'border-slate-600'
                   }`}
                 >
@@ -237,7 +237,7 @@ export const ProductPage = () => {
             {/* Action Buttons */}
             <div className="space-y-3">
               <Button 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 disabled={!isAvailable}
                 onClick={handleAddToCart}
               >

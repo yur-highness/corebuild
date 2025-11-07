@@ -8,7 +8,7 @@ export interface WishlistItem {
   category: string;
   price: string;
   originalPrice?: string | null;
-  image: string;
+  image: string[];
   rating: number;
   inStock: boolean;
 }

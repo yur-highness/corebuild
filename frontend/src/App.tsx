@@ -19,6 +19,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import EmailVerify from "./pages/EmailVerify.tsx";
 import Profile from "./pages/Profile.tsx";
 import { AppContextProvider } from "./context/AppContext.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <TooltipProvider>
               <Sonner />
               <BrowserRouter>
+                  <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/product/:id" element={<ProductPage />} />

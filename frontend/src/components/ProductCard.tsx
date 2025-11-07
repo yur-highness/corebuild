@@ -12,7 +12,7 @@ interface Product {
   category: string;
   price: string;
   originalPrice?: string | null;
-  image: string[];
+  image: string;
   rating: number;
   inStock: boolean;
 }
@@ -41,7 +41,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       id: product.id,
       name: product.name,
       price: numericPrice,
-      image: product.image
+      image: product.image[0] 
     });
   };
 
@@ -51,7 +51,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     if (isWishlisted) {
       removeFromWishlist(product.id);
     } else {
-      addToWishlist(product);
+      addToWishlist({
+  ...product,
+  image: [product.image[0]], 
+});
     }
   };
 
@@ -63,7 +66,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       <CardContent className="p-0 flex flex-col h-full">
         <div className="relative overflow-hidden rounded-t-lg">
           <img
-            src={product.image}
+            src={product.image[0]}
             alt={product.name}
             className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
           />
@@ -91,7 +94,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </Button>
         </div>
         
-        <div className="p-6 flex flex-col flex-grow">
+        <div className="p-6 flex flex-col grow">
           <div className="mb-2">
             <Badge variant="outline" className="text-blue-400 border-blue-400">
               {product.category}
@@ -126,7 +129,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <Button
               size="sm"
               disabled={!product.inStock}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
+              className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
               onClick={handleAddToCart}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />

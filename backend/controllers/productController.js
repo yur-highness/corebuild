@@ -3,9 +3,20 @@ import Product from "../models/productModel.js";
 // ✅ Create a new product
 export const createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).json({ success: true, data: product });
+    const {name,
+      category,
+      price ,
+      originalPrice ,
+      currentPrice,
+      images,
+      description,
+      specifications,
+      features,
+      variants} = req.body;
+
+      
+
+    res.status(201).json({ success: true, });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
