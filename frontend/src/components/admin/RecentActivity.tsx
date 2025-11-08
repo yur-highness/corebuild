@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, User, Package, DollarSign } from "lucide-react";
 
@@ -72,7 +71,7 @@ export const RecentActivity = () => {
         <div className="space-y-4">
           {activities.map((activity) => (
             <div key={activity.id} className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
                   <activity.icon className="w-4 h-4 text-blue-400" />
                 </div>

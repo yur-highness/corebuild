@@ -3,7 +3,7 @@ import { Input } from "../components/ui/input";
 
 export const Newsletter = () => {
   return (
-    <section className="py-20 px-4 bg-gradient-to-r from-zinc-500 via-zinc-600 to-zinc-200">
+    <section className="py-20 px-4 bg-linear-to-r from-zinc-500 via-zinc-600 to-zinc-200">
       <div className="container mx-auto text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">

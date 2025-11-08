@@ -20,11 +20,7 @@ interface Admin {
   status: "Active" | "Inactive";
 }
 
-// interface ToastOptions {
-//   title: string;
-//   description: string;
-//   variant?: string;
-// }
+
 
 const mockAdmins: Admin[] = [
   {
@@ -74,19 +70,17 @@ export const AdminManagement = () => {
     setAdmins([...admins, admin]);
     setNewAdmin({ name: "", email: "", role: "Admin" });
     setShowAddForm(false);
-    toast({
-      title: "Admin Added",
+    toast.success("Admin Added",{
       description: `${admin.name} has been added as an admin.`,
-    } as any);
+    });
   };
 
   const handleRemoveAdmin = (id: string) => {
     setAdmins(admins.filter(admin => admin.id !== id));
-    toast({
-      title: "Admin Removed",
+    toast.success("Admin Removed",({
       description: "Admin has been removed from the system.",
-      variant: "destructive",
-    }as any);
+
+    }));
   };
 
   const getRoleBadgeColor = (role: Admin["role"]) => {

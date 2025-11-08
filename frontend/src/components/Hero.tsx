@@ -6,7 +6,7 @@ import "../index.css"
 export const Hero = () => {
   return (
     <>
-    <section className="relative md:py-20 px-2 md:px-4 md:min-h-[50vh] min-h-[100vh] md:h-screen overflow-hidden bg-[#0b0b0f] bgImg">
+    <section className="relative md:py-20 px-2 md:px-4 md:min-h-[50vh] min-h-screen md:h-screen overflow-hidden bg-[#0b0b0f] bgImg">
   <MacbookScroll src={`apple.png`} showGradient={false} />
   <div className="absolute top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
    <p className="text-base sm:text-sm md:text-lg text-gray-300 max-w-xl mx-auto animate-fade-in">

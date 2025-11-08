@@ -7,6 +7,7 @@ import connectCloudinary from "./config/cloudinary.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
 import productRouter from "./routes/productRouter.js";
+import orderRouter from "./routes/ordersRouter.js";
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/products", productRouter);
+app.use("/api/oders", orderRouter);
 
 
 app.listen(port, () => {

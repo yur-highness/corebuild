@@ -20,6 +20,8 @@ import EmailVerify from "./pages/EmailVerify.tsx";
 import Profile from "./pages/Profile.tsx";
 import { AppContextProvider } from "./context/AppContext.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
+import {OrdersDetails}  from "./pages/OrdersDetails.tsx";
+import {OrdersPage} from "./pages/OrdersPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +43,9 @@ const App = () => (
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/news" element={<HardwareNews />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
+                   <Route path="/orders" element={<OrdersPage />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/orders/:id" element={<OrdersDetails />} />
 
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/email-verify" element={<EmailVerify />} />

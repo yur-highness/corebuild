@@ -18,7 +18,6 @@ export const getUserData = async (req, res) => {
         lastName: users.lastName,
         email: users.email,
         role: users.role,
-        
       },
       token: req.cookies.token,
     });

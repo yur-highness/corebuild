@@ -12,7 +12,7 @@ import { BarChart3, Package, Users, Settings } from "lucide-react";
 
 export const AdminDashboard = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

@@ -1,7 +1,7 @@
-import {  ShoppingCart, Package,BookOpen, Newspaper, Heart, User  } from "lucide-react";
+import {  ShoppingCart, Package,BookOpen, Newspaper, Heart, User,Codesandbox  } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { createContext, type ReactNode, use, useContext, useState } from "react";
+import { createContext, type ReactNode,  useContext, useState } from "react";
 import SearchComponent from "./animated-glowing-serach-bar";
 import  { useCart } from "../context/CartContext";
 import { AppContext } from "../context/AppContext";
@@ -109,6 +109,11 @@ const [settingsOpen, setSettingsOpen] = useState(false);
     navigate("/news");
   };
 
+   const handleOdersClick = () => {
+    navigate("/orders");
+  };
+
+
 
   const  handlelogout  = async () => {
     try{
@@ -176,6 +181,15 @@ const [settingsOpen, setSettingsOpen] = useState(false);
         >
           <Heart className="h-4 w-4" />
           <span className=" sm:inline">Wishlist</span>
+        </Button>
+         <Button 
+          variant="ghost" 
+          onClick={handleOdersClick}
+          className="text-white hover:bg-white/10 flex items-center gap-2"
+        >
+   
+          <Codesandbox className="h-4 w-4" />
+          <span className=" sm:inline">Orders</span>
         </Button>
         <Button 
           variant="ghost" 

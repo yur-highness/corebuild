@@ -7,6 +7,7 @@ import products  from "../assets/index.ts";
 
 
 
+
 export const ProductGrid = () => {
   const { activeCategory } = useCategory();
   

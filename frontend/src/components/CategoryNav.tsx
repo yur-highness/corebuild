@@ -24,7 +24,7 @@ export const CategoryNav = () => {
               variant={activeCategory === category.name ? "default" : "ghost"}
               className={
                 activeCategory === category.name
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                  ? "bg-linear-to-r from-blue-600 to-purple-600 text-white"
                   : "text-gray-300 hover:text-white hover:bg-white/10"
               }
               onClick={() => setActiveCategory(category.name)}

@@ -20,7 +20,7 @@ export const ProductImages = ({ images, productName, selectedImage, onImageSelec
           <button
             key={index}
             onClick={() => onImageSelect(index)}
-            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+            className={`shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
               selectedImage === index ? 'border-blue-500' : 'border-slate-600'
             }`}
           >

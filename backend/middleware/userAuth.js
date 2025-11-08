@@ -16,8 +16,10 @@ const userAuth = async (req, res, next) => {
       if (!req.body) req.body = {};
     if (decodedToken.id) {
       req.body.userId = decodedToken.id;
+ 
       
     } 
+   
 
     else {
       return res.status(400).json({

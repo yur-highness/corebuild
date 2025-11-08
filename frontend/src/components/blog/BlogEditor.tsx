@@ -46,11 +46,11 @@ export const BlogEditor = ({ post, currentUserId, onSave, onCancel }: BlogEditor
     e.preventDefault();
     
     if (!formData.title.trim() || !formData.content.trim()) {
-      toast({
-        title: "Error",
+      toast("required",{
+      
         description: "Please fill in all required fields.",
-        variant: "destructive"
-      }as any);
+
+      });
       return;
     }
 
@@ -65,10 +65,10 @@ export const BlogEditor = ({ post, currentUserId, onSave, onCancel }: BlogEditor
       upvotes: post?.upvotes || 0
     });
 
-    toast({
-      title: post ? "Post Updated" : "Post Created",
+  toast.success(`${post} ? "Post Updated" : "Post Created",`,{
+ 
       description: `Blog post has been successfully ${post ? 'updated' : 'created'}.`,
-    }as any);
+    });
 
     onSave();
   };

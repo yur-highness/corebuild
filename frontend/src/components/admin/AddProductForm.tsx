@@ -23,8 +23,8 @@ export const AddProductForm = () => {
     if (files) {
       // In a real app, you would upload to a service like Supabase Storage
       // For now, we'll use placeholder URLs
-      const newImages = Array.from(files).map((file, index) => 
-        `https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop&crop=center&auto=format&q=80&${index}`
+      const newImages = Array.from(files).map((file) => 
+        URL.createObjectURL(file)
       );
       setImages([...images, ...newImages]);
     }
@@ -37,10 +37,10 @@ export const AddProductForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Product data:", { ...formData, images });
-    toast({
-      title: "Product Added",
+    toast("product added",{
+   
       description: "New product has been successfully added to inventory.",
-    }as any);
+    });
     // Reset form
     setFormData({ name: "", description: "", price: "", quantity: "", category: "" });
     setImages([]);
@@ -156,7 +156,7 @@ export const AddProductForm = () => {
                       <img
                         src={image}
                         alt={`Product ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-md border border-white/20"
+                        className="w-full h-84 object-cover rounded-md border border-white/20"
                       />
                       <button
                         type="button"

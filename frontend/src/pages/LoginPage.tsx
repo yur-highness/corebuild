@@ -79,7 +79,7 @@ export const LoginPage = () => {
 };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
+    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-black">
       <Toaster />
       <Header />
 

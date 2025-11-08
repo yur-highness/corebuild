@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { XAxis, YAxis,  Area, AreaChart } from "recharts";
 
 const salesData = [
   { month: "Jan", revenue: 12000, orders: 240 },

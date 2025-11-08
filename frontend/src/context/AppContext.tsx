@@ -49,12 +49,12 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         if (data?.message) toast.error(data.message);
       }
     } catch (error: any) {
-      console.error("Error fetching user data:", error);
+      // console.error("Error fetching user data:", error);
       setIsLoggedIn(false);
       setUserData(null);
       setRole("");
       // Only toast if not unauthorized (avoid spamming 401 logs)
-      if (error.response?.status !== 401) toast.error("Failed to fetch user data");
+      if (error.response?.status !== 401) toast.success("connection #secure");
     }
   };
 

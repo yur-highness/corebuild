@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { BlogPost } from "@/pages/BlogPage";
 import { Heart, Search, Calendar, User, TrendingUp, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 
 interface BlogListProps {
@@ -71,16 +72,15 @@ export const BlogList = ({ currentUserId, onEditPost }: BlogListProps) => {
           : post
       )
     );
-    toast({
-      title: "Vote Recorded",
+    toast.success("Vote Recorded",{
+     
       description: "Thank you for your feedback!",
     });
   };
 
   const handleDelete = (postId: string) => {
     setBlogPosts(posts => posts.filter(post => post.id !== postId));
-    toast({
-      title: "Post Deleted",
+    toast.success("Post Deleted",{
       description: "Blog post has been successfully deleted.",
     });
   };
