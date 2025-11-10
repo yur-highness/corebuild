@@ -9,6 +9,8 @@ import { AddProductForm } from "../components/admin/AddProductForm";
 import { AdminManagement } from "../components/admin/AdminManagemen";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Package, Users, Settings } from "lucide-react";
+import { ShowAllProducts } from "../components/admin/ShowAllProducts";
+
 
 export const AdminDashboard = () => {
   return (
@@ -74,6 +76,7 @@ export const AdminDashboard = () => {
           <TabsContent value="products" className="space-y-6">
             <div className="grid gap-6">
               <AddProductForm />
+                  <ShowAllProducts /> 
               <ProductsChart />
             </div>
           </TabsContent>

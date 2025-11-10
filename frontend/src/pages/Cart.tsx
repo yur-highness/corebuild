@@ -17,12 +17,12 @@ export const CartPage = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
 
-  const handleQuantityChange = (id: number, newQuantity: number) => {
+  const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     updateQuantity(id, newQuantity);
   };
 
-  const handleRemoveItem = (id: number, name: string) => {
+  const handleRemoveItem = (id: string, name: string) => {
     removeFromCart(id);
     toast.success(`${name} removed from cart`);
   };
@@ -34,11 +34,11 @@ export const CartPage = () => {
   const handleCheckout = () => {
     setIsCheckingOut(true);
     // Simulate checkout process
+    toast.success("please fill all the details to continue payment");
+    navigate("/paymentform");
     setTimeout(() => {
       setIsCheckingOut(false);
-      toast.success("Order placed successfully!");
-      clearCart();
-      navigate("/");
+      
     }, 2000);
   };
 
@@ -46,7 +46,7 @@ export const CartPage = () => {
     setAppliedCoupon({ code: couponCode, discount });
   };
 
-  const handleProductClick = (productId: number) => {
+  const handleProductClick = (productId: string) => {
     navigate(`/product/${productId}`);
   };
 
@@ -59,7 +59,7 @@ export const CartPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
+      <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-black">
         <Header />
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-md mx-auto text-center">
@@ -70,7 +70,7 @@ export const CartPage = () => {
             </p>
             <Button 
               onClick={() => navigate("/")}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               Continue Shopping
             </Button>
@@ -82,7 +82,7 @@ export const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
+    <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-black">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
@@ -123,11 +123,11 @@ export const CartPage = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div 
-                      className="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0 cursor-pointer"
+                      className="w-full sm:w-24 h-24 rounded-lg overflow-hidden bg-slate-700 shrink-0 cursor-pointer"
                       onClick={() => handleProductClick(item.id)}
                     >
                       <img
-                        src={item.image}
+                        src={item.images[0]}
                         alt={item.name}
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
@@ -253,7 +253,7 @@ export const CartPage = () => {
                 
                 <div className="space-y-3 pt-4">
                   <Button
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                     onClick={handleCheckout}
                     disabled={isCheckingOut}
                   >

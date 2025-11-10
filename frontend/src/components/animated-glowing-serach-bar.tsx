@@ -40,7 +40,7 @@ const SearchComponent = () => {
         </div>
 
         <div id="main" className="relative group">
-          <input placeholder="Search hardware..." type="text" name="text" className="bg-[#010201] border-none w-[501px] h-[46px] rounded-lg text-white px-[59px] text-lg focus:outline-none placeholder-gray-400" />
+          <input placeholder="Search hardware..." type="text" name="text" className="bg-zinc-800 border-none w-[501px] h-[46px] rounded-lg text-white px-[59px] text-lg focus:outline-none placeholder-gray-400" />
      
        
           

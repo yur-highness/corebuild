@@ -29,6 +29,12 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [role, setRole] = useState("");
 
+  const [token, setToken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):null);
+
+  useEffect(() => {
+    localStorage.setItem("token", token || "");
+  }, [token]);
+
   // ✅ Automatically include credentials (cookies)
   axios.defaults.withCredentials = true;
 

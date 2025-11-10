@@ -35,6 +35,20 @@ const orderSchema = new mongoose.Schema(
       enum: ["unpaid", "paid", "refunded"],
       default: "unpaid",
     },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+    payment:{
+      type:Boolean, 
+      default:false, 
+      required:true
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+      required: true,
+    },
     shippingAddress: {
       fullName: String,
       address: String,
@@ -49,6 +63,6 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-const OrderModel = mongoose.model("Order", orderSchema);
+const OrderModel = mongoose.models.Order||mongoose.model("Order", orderSchema);
 
 export default OrderModel;

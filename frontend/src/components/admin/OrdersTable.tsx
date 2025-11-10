@@ -3,54 +3,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Edit, Trash2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
-const orders = [
-  {
-    id: "#1234",
-    customer: "John Doe",
-    email: "john@example.com",
-    product: "RTX 4080 Graphics Card",
-    amount: "$1,199.99",
-    status: "completed",
-    date: "2024-01-15",
-  },
-  {
-    id: "#1235",
-    customer: "Jane Smith",
-    email: "jane@example.com",
-    product: "Intel i9-13900K",
-    amount: "$589.99",
-    status: "processing",
-    date: "2024-01-15",
-  },
-  {
-    id: "#1236",
-    customer: "Mike Johnson",
-    email: "mike@example.com",
-    product: "ASUS ROG Motherboard",
-    amount: "$399.99",
-    status: "shipped",
-    date: "2024-01-14",
-  },
-  {
-    id: "#1237",
-    customer: "Sarah Wilson",
-    email: "sarah@example.com",
-    product: "32GB DDR5 RAM",
-    amount: "$299.99",
-    status: "pending",
-    date: "2024-01-14",
-  },
-  {
-    id: "#1238",
-    customer: "Tom Brown",
-    email: "tom@example.com",
-    product: "Samsung 980 Pro SSD",
-    amount: "$199.99",
-    status: "completed",
-    date: "2024-01-13",
-  },
-];
+
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -63,6 +20,32 @@ const getStatusColor = (status: string) => {
 };
 
 export const OrdersTable = () => {
+const[orders, setOrders] = useState([]);
+const fetchOrders = async () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  try {
+    const response = await axios.get(`${backendUrl}/api/orders/all`);
+    if(response.data.success){
+      setOrders(response.data.orders);
+    }
+    else{
+      console.error(response.data.message);
+      toast.error("Failed to fetch orders", { description: response.data.message });
+      
+    }
+
+
+  } 
+  catch (error) {
+    console.error("Error fetching orders:", error);
+    toast.error("Failed to fetch orders", { description: "An error occurred while fetching orders."});
+  }
+}
+
+useEffect(() => {
+  fetchOrders();
+}, []);
+
   return (
     <Card className="bg-black/20 border-white/10 backdrop-blur-sm">
       <CardHeader>
@@ -83,7 +66,7 @@ export const OrdersTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order) => (
+              {orders.map((order:any) => (
                 <TableRow key={order.id} className="border-white/10">
                   <TableCell className="text-white font-medium">{order.id}</TableCell>
                   <TableCell>

@@ -6,48 +6,92 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
+
 
 export const AddProductForm = () => {
-//   const { toast } = useToast();
-  const [images, setImages] = useState<string[]>([]);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     quantity: "",
     category: "",
+    currentPrice: "",
+    originalPrice: "",
+    variants: "",
+    images: "",
+    features: "",
+    specifications: "",
+
+
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      // In a real app, you would upload to a service like Supabase Storage
-      // For now, we'll use placeholder URLs
-      const newImages = Array.from(files).map((file) => 
-        URL.createObjectURL(file)
-      );
-      setImages([...images, ...newImages]);
+      const newFiles = Array.from(files);
+      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+      setImageFiles((prev) => [...prev, ...newFiles]);
+      setPreviewImages((prev) => [...prev, ...newPreviews]);
     }
   };
 
   const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Product data:", { ...formData, images });
-    toast("product added",{
-   
-      description: "New product has been successfully added to inventory.",
-    });
-    // Reset form
-    setFormData({ name: "", description: "", price: "", quantity: "", category: "" });
-    setImages([]);
+    setPreviewImages(previewImages.filter((_, i) => i !== index));
+    setImageFiles(imageFiles.filter((_, i) => i !== index));
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("price", formData.price);
+      data.append("quantity", formData.quantity);
+      data.append("category", formData.category);
+      data.append("currentPrice", formData.currentPrice);
+      data.append("originalPrice", formData.originalPrice);
+      data.append("variants", formData.variants);
+      data.append("features", formData.features);
+      data.append("specifications", formData.specifications);
+
+      imageFiles.forEach((file) => data.append("images", file));//suspicious
+
+      const response = await axios.post(`${backendUrl}/api/products/add`, data, {
+       headers: {
+         "token": localStorage.getItem("token")
+       },
+      });
+
+      if(response.data.success){
+        toast.success("✅ Product added successfully", {
+          description: "Your new product has been saved to the inventory.",
+        });
+        // Reset form
+        setFormData({ name: "", description: "", price: "", quantity: "", category: "", currentPrice: "", originalPrice: "", variants: "", images: "", features: "", specifications: "" });
+        setPreviewImages([]);
+        setImageFiles([]);
+      }
+      else{
+        toast.error("❌ Failed to add product", {
+          description: `error:${response.data.message}`,
+        });
+      }
+    } 
+    catch (err) {
+      console.error(err);
+      toast.error("❌ Failed to add product", {
+        description: "Please try again.",
+      });
+    }
   };
 
   return (
@@ -96,6 +140,40 @@ export const AddProductForm = () => {
               required
             />
           </div>
+                <div className="space-y-2">
+            <Label htmlFor="specifications" className="text-white">specifications</Label>
+            <Textarea
+              id="specifications"
+              placeholder="Enter product specifications"
+              value={formData.description}
+              onChange={(e) => handleInputChange("specifications", e.target.value)}
+              className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
+              required
+            />
+          </div>
+               <div className="space-y-2">
+            <Label htmlFor="variants" className="text-white">variants</Label>
+            <Textarea
+              id="variants"
+              placeholder="Enter product variants"
+              value={formData.description}
+              onChange={(e) => handleInputChange("variants", e.target.value)}
+              className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
+              required
+            />
+          </div>
+
+              <div className="space-y-2">
+            <Label htmlFor="variants" className="text-white">features</Label>
+            <Textarea
+              id="features"
+              placeholder="Enter product features"
+              value={formData.description}
+              onChange={(e) => handleInputChange("features", e.target.value)}
+              className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
+              required
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -103,14 +181,47 @@ export const AddProductForm = () => {
               <Input
                 id="price"
                 type="number"
-                placeholder="0.00"
                 step="0.01"
+                placeholder="0.00"
                 value={formData.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
                 className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                 required
               />
             </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price" className="text-white">currentPrice ($)</Label>
+              <Input
+                id="currentPrice"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={formData.currentPrice}
+                onChange={(e) => handleInputChange("currentPrice", e.target.value)}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                required
+              />
+            </div>
+            </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price" className="text-white">originalPrice ($)</Label>
+              <Input
+                id="originalPrice"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={formData.originalPrice}
+                onChange={(e) => handleInputChange("originalPrice", e.target.value)}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                required
+              />
+            </div>
+            </div>
+              
+
+            
             <div className="space-y-2">
               <Label htmlFor="quantity" className="text-white">Quantity</Label>
               <Input
@@ -137,26 +248,26 @@ export const AddProductForm = () => {
                   className="hidden"
                   id="image-upload"
                 />
-                <Label 
-                  htmlFor="image-upload" 
+                <Label
+                  htmlFor="image-upload"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md cursor-pointer transition-colors"
                 >
                   <Upload className="h-4 w-4" />
                   Upload Images
                 </Label>
                 <span className="text-gray-400 text-sm">
-                  {images.length} image(s) selected
+                  {previewImages.length} image(s) selected
                 </span>
               </div>
-              
-              {images.length > 0 && (
+
+              {previewImages.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {images.map((image, index) => (
+                  {previewImages.map((image, index) => (
                     <div key={index} className="relative group">
                       <img
                         src={image}
                         alt={`Product ${index + 1}`}
-                        className="w-full h-84 object-cover rounded-md border border-white/20"
+                        className="w-full h-32 object-cover rounded-md border border-white/20"
                       />
                       <button
                         type="button"
@@ -172,8 +283,8 @@ export const AddProductForm = () => {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           >
             Add Product

@@ -31,7 +31,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = async(item: CartItem) => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     setCart((prev) => {
       const exists = prev.find((i) => i.id === item.id);
       if (exists) {
@@ -41,6 +42,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
+      try {
+    await axios.post(`${backendUrl}/api/user/cart/add`, {
+      productId: item.id,
+      quantity: item.quantity,
+    }, { withCredentials: true });
+  } catch (error) {
+    console.error("Error syncing cart:", error);
+  }
   };
 
   const removeFromCart = (id: number) => {
@@ -103,6 +112,8 @@ const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleWishlistClick = () => {
     navigate("/wishlist");
+
+
   };
 
   const handleNewsClick = () => {

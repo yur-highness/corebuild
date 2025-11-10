@@ -45,6 +45,22 @@ const userSchema = mongoose.Schema(
             enum: ["user", "admin"], // you can add more roles later
             default: "user",
     },
+    cart: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+      quantity: { type: Number, default: 1 },
+      variant: { type: String }
+    },
+  ],
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
     },
     {
         timestamps: true,
