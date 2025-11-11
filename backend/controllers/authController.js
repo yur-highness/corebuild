@@ -1,4 +1,4 @@
-import bcrpypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
             }
 
         
-        const hashedPassword = await bcrpypt.hash(password, 13);
+        const hashedPassword = await bcrypt.hash(password, 13);
         const user = await UserModel.create({
             firstName,
             lastName,
@@ -101,7 +101,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrpypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) {
             return res.status(400).json({
                 success: false,
@@ -148,15 +148,12 @@ export const logout = async (req, res) => {
             secure:process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         });
-        res.status(200).json({
-            success: true,
-            message: "User logged out successfully"
-        });
-
         return res.status(200).json({
             success: true,
             message: "User logged out successfully"
         });
+
+    
     }
     catch(error) {
         console.log(error);
@@ -213,10 +210,6 @@ export const sendVerifyOtp = async (req, res) => {
 export const verifyEmail = async (req, res) => {
       const {userId, otp} = req.body;
       const user = await UserModel.findById(userId);
-
-
-
-
     try{
         if(!userId || !otp) {
         return res.status(400).json({
@@ -343,6 +336,7 @@ export const sendResetOtp = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     const {email, otp, newPassword} = req.body;
+      console.log("📥 Reset request:", req.body);
 
       if(!email || !otp || !newPassword) {
         return res.status(400).json({
@@ -375,7 +369,7 @@ export const resetPassword = async (req, res) => {
             }); 
         }        
 
-        const hashedPassword = await bcrpypt.hash(newPassword, 13);
+        const hashedPassword = await bcrypt.hash(newPassword, 13);
         user.password = hashedPassword;
         user.resetOtp = "";
         user.resetOtpExpireAt = 0;

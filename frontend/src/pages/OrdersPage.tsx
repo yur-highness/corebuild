@@ -5,31 +5,65 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useAppContext } from "../context/AppContext";
 
-const mockOrders = [
-  {
-    id: 1,
-    date: "2025-10-30",
-    status: "Delivered",
-    total: "$124.99",
-    items: [
-      { name: "Wireless Headphones", image: "/images/headphones.jpg", qty: 1, price: "$99.99" },
-      { name: "Charging Cable", image: "/images/cable.jpg", qty: 1, price: "$25.00" },
-    ],
-  },
-  {
-    id: 2,
-    date: "2025-11-05",
-    status: "Shipped",
-    total: "$59.99",
-    items: [
-      { name: "Smartwatch Strap", image: "/images/strap.jpg", qty: 2, price: "$29.99" },
-    ],
-  },
-];
+
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  images: string[];
+  variant: string;
+}
+
+interface Order {
+  _id: string;
+  userId: string;
+  items: CartItem[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  totalAmount: number;
+  count: number;
+}
+
+
+
 
 export const OrdersPage = () => {
   const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [orders, setOrders] = useState<Order[]>([]);
+     const { backendUrl  } = useAppContext();
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${backendUrl}/api/orders/my-orders`);
+      if (response.data.success) {
+       
+        setOrders(response.data.orders);
+      } else {
+        toast.error("Failed to fetch products", {
+          description: response.data.message,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error fetching products:", error);
+      toast.error("Error fetching products", {
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -58,7 +92,7 @@ export const OrdersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
+    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-black">
       <Header />
 
       <div className="container mx-auto px-4 py-8">
@@ -66,73 +100,75 @@ export const OrdersPage = () => {
           <Package className="h-8 w-8 text-purple-400" />
           <h1 className="text-4xl font-bold text-white">My Orders</h1>
           <Badge variant="secondary" className="ml-2">
-            {mockOrders.length} orders
+            orders{orders.count}
           </Badge>
         </div>
 
         <div className="space-y-6">
-          {mockOrders.map((order) => (
-            <Card
-              key={order.id}
-              className="bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] overflow-hidden"
-            >
-              <CardContent className="p-6">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-1">Order #{order.id}</h3>
-                    <p className="text-gray-400 text-sm">Placed on {order.date}</p>
-                  </div>
-                  <div className="flex items-center gap-2 mt-2 md:mt-0">
-                    {getStatusIcon(order.status)}
-                    <Badge
-                      variant="outline"
-                      className={`${getStatusColor(order.status)} border`}
-                    >
-                      {order.status}
-                    </Badge>
-                  </div>
-                </div>
+          {orders.map((order) => (
+  <Card
+    key={order._id}
+    className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300"
+  >
+    <CardContent className="p-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-1">Order #{order._id}</h3>
+          <p className="text-gray-400 text-sm">
+            Placed on {new Date(order.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 mt-2 md:mt-0">
+          {getStatusIcon(order.status)}
+          <Badge
+            variant="outline"
+            className={`${getStatusColor(order.status)} border`}
+          >
+            {order.status}
+          </Badge>
+        </div>
+      </div>
 
-                <div className="border-t border-white/10 my-4"></div>
+      <div className="border-t border-white/10 my-4"></div>
 
-                {/* Items Grid */}
-                <div className="flex flex-wrap gap-4 mb-6">
-                  {order.items.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/10 min-w-[240px] max-w-[300px] flex-shrink-0"
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-14 h-14 rounded-lg object-cover"
-                      />
-                      <div className="min-w-0">
-                        <h4 className="text-white font-medium truncate">{item.name}</h4>
-                        <p className="text-gray-400 text-sm truncate">
-                          Qty: {item.qty} • {item.price}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      <div className="flex flex-wrap gap-4 mb-6">
+        {order.items.map((item: any, i: number) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/10 min-w-[240px]"
+          >
+            <img
+              src={item.product_id?.images?.[0] || "/placeholder.png"}
+              alt={item.product_id?.name || "Product"}
+              className="w-14 h-14 rounded-lg object-cover"
+            />
+            <div className="min-w-0">
+              <h4 className="text-white font-medium truncate">
+                {item.product_id?.name || "Unnamed Product"}
+              </h4>
+              <p className="text-gray-400 text-sm truncate">
+                Qty: {item.quantity} • ₹{item.price}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                  <p className="text-white text-lg font-semibold">
-                    Total: <span className="text-purple-400">{order.total}</span>
-                  </p>
-                  <Button
-                    onClick={() => navigate(`/orders/${order.id}`)}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  >
-                    View Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="flex items-center justify-between">
+        <p className="text-white text-lg font-semibold">
+          Total: <span className="text-purple-400">₹{orders.totalAmount}</span>
+        </p>
+        <Button
+          onClick={() => navigate(`/orders/${order._id}`)}
+          className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+        >
+          View Details
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+))}
+
         </div>
       </div>
 

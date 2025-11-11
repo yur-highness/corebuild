@@ -60,6 +60,7 @@ export const getUserData = async (req, res) => {
     res.json({
       success: true,
       userData: {
+        _id: users._id,
         firstName: users.firstName,
         lastName: users.lastName,
         email: users.email,
@@ -71,6 +72,41 @@ export const getUserData = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+export const getUserCart = async (req, res) => {
+  try {
+    // You should have user ID set by your auth middleware
+    const {userId} = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    const user = await UserModel.findById(userId).select("cart");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      cart: user.cart || {},
+    });
+  } catch (error) {
+    console.error("Error fetching user cart:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server error fetching cart",
     });
   }
 };

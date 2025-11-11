@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
-import Product from "./productModel.js";
+
 
 
 const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: "User",
       required: true,
     },
     items: [
       {
-        productId: {
+        product_id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
@@ -42,7 +42,6 @@ const orderSchema = new mongoose.Schema(
     payment:{
       type:Boolean, 
       default:false, 
-      required:true
     },
     date: {
       type: Date,
@@ -51,11 +50,16 @@ const orderSchema = new mongoose.Schema(
     },
     shippingAddress: {
       fullName: String,
-      address: String,
       city: String,
       state: String,
       postalCode: String,
       country: String,
+      street: String,
+      phone: String,
+     
+     
+    
+  
     },
   },
   {

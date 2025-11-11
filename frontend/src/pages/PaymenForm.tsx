@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -11,8 +11,26 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCart } from "@/context/CartContext";
+import { useAppContext } from "@/context/AppContext";
+import { toast } from "sonner";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  // variant: string;
+}
+
+
 
 export default function PaymentForm() {
+  const { items, getTotalPrice, getTotalItems,clearCart, } = useCart();
+ const { backendUrl,  delivery_fee,userData  } = useAppContext();
+ const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,6 +43,18 @@ export default function PaymentForm() {
     phone: "",
     paymentMethod: "COD",
   });
+  useEffect(() => {
+  if (userData) {
+    setFormData((prev) => ({
+      ...prev,
+      firstName: userData.firstName || "",
+      lastName: userData.lastName || "",
+      email: userData.email || "",
+      // if you also store phone, auto-fill that too
+      
+    }));
+  }
+}, [userData]);
 
   const handleChange = (e:any) => {
     const { id, value } = e.target;
@@ -35,13 +65,118 @@ export default function PaymentForm() {
     setFormData((prev) => ({ ...prev, paymentMethod: value }));
   };
 
-  const handleSubmit = (e:any) => {
-    e.preventDefault();
-    console.log("Payment Info Submitted:", formData);
+ const handleSubmit = async (e: any) => {
+  e.preventDefault();
+
+  if (!userData) {
+    toast.error("Please log in before placing an order.");
+    return;
+  }
+
+  const orderitems = items.map((item: CartItem) => ({
+    product_id: item.id,
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+  }));
+  const address = {
+    street: formData.street,
+    city: formData.city,
+    state: formData.state,
+    country: formData.country,
+    zipCode: formData.zipCode,
+    fullName: `${formData.firstName} ${formData.lastName}`,
+    phone: formData.phone,
   };
 
+
+  try {
+  const orderData = {
+    user: userData.id,
+    items:orderitems,
+    totalAmount: getTotalPrice()+ delivery_fee,
+    totalItems: getTotalItems(),
+    shippingAddress: address,
+    paymentMethod: formData.paymentMethod
+  };
+
+
+
+
+  switch (formData.paymentMethod) {
+  case "COD": {
+    const response = await axios.post(`${backendUrl}/api/orders/payment-COD`, orderData, {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+      withCredentials: true
+    });
+    if (response.data.success) {
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/orders");
+      return;
+    }
+    else{
+      toast.error("Failed to place order");
+    }
+    break;
+  }
+
+  case "Stripe": {
+    const response = await axios.post(`${backendUrl}/api/orders/payment-stripe`, orderData, {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+    })
+    if (response.data.success) {
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/orders");
+      return;
+    }
+    else{
+      toast.error("Failed to place order");
+    }
+    break;
+  }
+
+  case "Razorpay": {
+       const response = await axios.post(`${backendUrl}/api/orders/payment-razorpay`, orderData, {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+    })
+    if (response.data.success) {
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/orders");
+      return;
+    }
+    else{
+      toast.error("Failed to place order");
+    }
+    break;
+  }
+
+  default: {
+    formData.paymentMethod = "COD";
+  }
+}
+
+    toast.success("Order placed successfully!");
+    clearCart();
+  } 
+  catch (err: any) {
+    console.error("Order error:", err);
+    toast.error("Failed to place order");
+  }
+};
+
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-black">
+  
+    <div className="min-h-screen bg-linear  -to-br from-zinc-950 via-zinc-900 to-black">
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-lg bg-slate-800/50 border-slate-700">
           <CardHeader className="text-center">
@@ -69,6 +204,7 @@ export default function PaymentForm() {
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     required
+                    name="firstName"
                   />
                 </div>
                 <div className="space-y-2">
@@ -81,6 +217,7 @@ export default function PaymentForm() {
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     required
+                     name="lastName"
                   />
                 </div>
               </div>
@@ -96,6 +233,7 @@ export default function PaymentForm() {
                   onChange={handleChange}
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   required
+                   name="email"
                 />
               </div>
 
@@ -110,6 +248,7 @@ export default function PaymentForm() {
                   onChange={handleChange}
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   required
+                   name="street"
                 />
               </div>
 
@@ -125,6 +264,7 @@ export default function PaymentForm() {
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     required
+                     name="city"
                   />
                 </div>
                 <div className="space-y-2">
@@ -137,6 +277,7 @@ export default function PaymentForm() {
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     required
+                     name="state"
                   />
                 </div>
               </div>
@@ -152,7 +293,9 @@ export default function PaymentForm() {
                     value={formData.country}
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    required
+                     name="country"
+                     required
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -165,6 +308,7 @@ export default function PaymentForm() {
                     onChange={handleChange}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     required
+                     name="zipCode"
                   />
                 </div>
               </div>
@@ -174,19 +318,20 @@ export default function PaymentForm() {
                 <Label htmlFor="phone" className="text-white">Phone</Label>
                 <Input
                   id="phone"
-                  type="tel"
+                  type="text"
                   placeholder="+1 555 123 4567"
                   value={formData.phone}
                   onChange={handleChange}
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   required
+                  name="phone"
                 />
               </div>
 
               {/* Payment Method */}
               <div className="space-y-2">
                 <Label htmlFor="paymentMethod" className="text-white">Payment Method</Label>
-                <Select onValueChange={handleSelectChange} defaultValue={formData.paymentMethod}>
+                <Select onValueChange={handleSelectChange} defaultValue={formData.paymentMethod} name="paymentMethod">
                   <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                     <SelectValue placeholder="Select Payment Method" />
                   </SelectTrigger>
@@ -210,5 +355,6 @@ export default function PaymentForm() {
         </Card>
       </div>
     </div>
+
   );
 }

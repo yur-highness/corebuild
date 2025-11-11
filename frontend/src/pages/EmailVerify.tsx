@@ -1,14 +1,27 @@
 import type{  ChangeEvent, KeyboardEvent, FocusEvent, ClipboardEvent } from "react";
-import  { useState, useRef } from "react";
+import  { useState, useRef, } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Package } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+
+
 
 const EmailVerify: React.FC = () => {
-  const [otp, setOtp] = useState<string[]>(Array(4).fill(""));
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const navigate = useNavigate();
+  const  backendUrl = import.meta.env.VITE_BACKEND_URL;
+   const { id } = useParams();
+
+   axios.defaults.withCredentials = true;
+ 
+  
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
@@ -67,12 +80,12 @@ const EmailVerify: React.FC = () => {
     setOtp(digits);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
-    if (enteredOtp.length < 4) {
+    if (enteredOtp.length < 6) {
       toast.error("Incomplete OTP", {
-        description: "Please enter all 4 digits.",
+        description: "Please enter all 6 digits.",
       });
       return;
     }
@@ -80,10 +93,28 @@ const EmailVerify: React.FC = () => {
     toast.success("OTP Verified!", {
       description: `Entered code: ${enteredOtp}`,
     });
+    try{
+     
+      const response = await axios.post(`${backendUrl}/api/auth/verify-account`,{userId:id,otp:enteredOtp});
+      if(response.data.success){
+        toast.success("Email verified successfully!");
+      }
+    }
+    catch(error:any){
+      console.log(error);
+      toast.error("Error verifying account", { description: error.message });
+    }
+    finally{
+    navigate("/");
+    }
+
+  
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center">
+    <>
+    <Header />
+    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center">
       <Toaster />
 
       <Card className="w-full max-w-md bg-slate-800/50 border-slate-700 text-white">
@@ -127,6 +158,8 @@ const EmailVerify: React.FC = () => {
         </CardContent>
       </Card>
     </div>
+    <Footer />
+    </>
   );
 };
 

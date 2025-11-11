@@ -7,6 +7,7 @@ import  { useCart } from "../context/CartContext";
 import { AppContext } from "../context/AppContext";
 import { ChevronDown } from "lucide-react";
 import axios from "axios";
+import { toast } from "sonner";
 
 
 type CartItem = {
@@ -79,7 +80,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
   const totalItems = getTotalItems();
-  const {userData,backendUrl,setIsLoggedIn,setUserData} = useContext(AppContext)||{} ;
+  const {userData,backendUrl,setIsLoggedIn,isLoggedIn,setUserData} = useContext(AppContext)||{} ;
 const [settingsOpen, setSettingsOpen] = useState(false);
   
   const handleSettingsClick = () => {
@@ -126,13 +127,35 @@ const [settingsOpen, setSettingsOpen] = useState(false);
 
 
 
+  const sendVerificationOtp = async() => {
+
+    if(!isLoggedIn){
+      navigate("/login");
+    }
+    try{
+      axios.defaults.withCredentials = true;
+      const {data} = await axios.post(`${backendUrl}/api/auth/send-verify-otp`);
+      if(data.success){
+        navigate("/email-verify");
+      }
+      toast.success("Otp sent to your registered email");
+    }
+    catch(error){
+      console.log(error);
+    }
+  };
+
+
   const  handlelogout  = async () => {
+    if(!userData){
+      navigate("/");
+    }
     try{
       axios.defaults.withCredentials = true;
       const  {data} = await axios.post(`${backendUrl}/api/auth/logout`);
        if (data.success) {
       setIsLoggedIn?.(false);
-      setUserData?.(null);
+      setUserData?.({});
     }
 
     }
@@ -216,6 +239,7 @@ const [settingsOpen, setSettingsOpen] = useState(false);
           )}
         </Button>
         {userData?.role === "admin" && (
+          <>
           <Button 
             variant="ghost" 
             onClick={() => navigate("/admin")}
@@ -224,6 +248,9 @@ const [settingsOpen, setSettingsOpen] = useState(false);
             <User className="h-4 w-4" />
             <span className=" sm:inline">Admin</span>
           </Button>
+        
+          </>
+          
         )}
        {!userData ? (
           <>
@@ -267,6 +294,47 @@ const [settingsOpen, setSettingsOpen] = useState(false);
               >
                 Logout
               </button>
+{userData ? (
+  !userData.isAccountVerified && !isLoggedIn ? (
+    <button
+      className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black cursor-pointer"
+      onClick={sendVerificationOtp}
+    >
+      Verify Email
+    </button>
+  ) : (
+    <button
+      className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black cursor-not-allowed"
+      disabled
+    >
+      Verified
+    </button>
+  )
+) : (
+  <button
+    className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black cursor-pointer"
+    onClick={() => navigate("/login")}
+  >
+    Verify Email
+  </button>
+)}
+
+
+
+                <button 
+         
+              onClick={handleLoginClick}
+               className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black  cursor-pointer"
+            >
+
+              <span className="sm:inline">Login</span>
+            </button>
+            <button 
+              onClick={handleSignupClick}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-black  cursor-pointer"
+            >
+              Sign Up
+            </button>
             </div>
           )}  
         </div>

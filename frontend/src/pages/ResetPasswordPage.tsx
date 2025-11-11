@@ -1,5 +1,5 @@
 import type{  ChangeEvent, FocusEvent, KeyboardEvent, ClipboardEvent } from "react";
-import  { useState, useRef } from "react";
+import  { useState, useRef,} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,34 +14,62 @@ import { Eye, EyeOff, Package } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
 const ResetPasswordPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [otp, setOtp] = useState<string[]>(Array(4).fill(""));
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const[email, setEmail] = useState('');
+
+  const navigate = useNavigate();
+
+
+
 
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  axios.defaults.withCredentials = true;
 
-    if (password !== confirmPassword) {
-      toast.error("Mismatch", {
-        description: "Passwords do not match.",
-      });
-      setIsLoading(false);
+  if (password !== confirmPassword) {
+    toast.error("Mismatch", {
+      description: "Passwords do not match.",
+    });
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const otpCode = otp.join(""); // join digits into a string
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/auth/reset-password`,
+      { email, otp: otpCode, newPassword:password },
+      { withCredentials: true }
+    );
+
+    if (!response.data.success) {
+      toast.error("Error", { description: response.data.message });
       return;
     }
 
-    // Simulate password reset
-    setTimeout(() => {
-      toast.success("Password reset successful!");
-      setIsLoading(false);
-    }, 1000);
-  };
+    toast.success("Password reset successfully!");
+    navigate("/login", { replace: true });
+  } catch (error: any) {
+    console.error("Error resetting password:", error);
+    toast.error("Something went wrong. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
@@ -91,7 +119,7 @@ const ResetPasswordPage = () => {
     const text = e.clipboardData.getData("text");
     if (!new RegExp(`^[0-9]{${otp.length}}$`).test(text)) {
       toast.error("Invalid OTP", {
-        description: "Please paste exactly 4 digits.",
+        description: "Please paste exactly 6 digits.",
       });
       return;
     }
@@ -100,7 +128,7 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black">
+    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-black">
       <Toaster />
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
@@ -147,8 +175,8 @@ const ResetPasswordPage = () => {
                     id="email"
                     type={"email"}
                     placeholder="Enter your email"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 pr-10"
                     required
                   />

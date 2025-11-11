@@ -17,6 +17,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 
+
+
+
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +29,25 @@ export const LoginPage = () => {
 
 
   const { backendUrl, setIsLoggedIn, setRole, getUserData } = useContext(AppContext) || {};
+  const sendResetOtp = async () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  try {
+    axios.defaults.withCredentials = true;
+    
+    const response = await axios.post(`${backendUrl}/api/auth/sent-reset-otp`, { email });
+
+    if (!response.data.success) {
+      toast.error("Error sending OTP", { description: response.data.message });
+      return;
+    }
+    else{
+         toast.success("OTP sent successfully to your registered email!");
+    }
+
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+  }
+}
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -40,9 +62,6 @@ export const LoginPage = () => {
 
   try {
     const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
-
-    console.log("Login response:", data);
-
     if (data.success) {
       setIsLoggedIn?.(true);
 
@@ -105,6 +124,7 @@ export const LoginPage = () => {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -144,12 +164,14 @@ export const LoginPage = () => {
               </div>
 
               <div className="flex items-center justify-between">
+                <button onClick={sendResetOtp}>
                 <Link
                   to="/forgot-password"
                   className="text-sm text-blue-400 hover:text-blue-300"
                 >
                   Forgot password?
                 </Link>
+                </button>
               </div>
 
               <Button

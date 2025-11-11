@@ -91,20 +91,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // 🔄 Sync with backend (MongoDB)
-    try {
-      await axios.post(
-        `${backendUrl}/api/user/cart/add`,
-        {
-          productId: product.id,
-          quantity,
-          variant: product.variant,
-        },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.error("Error syncing cart:", error);
-    }
+
   };
 
   const toggleWishlist = async (productId: string) => {
@@ -165,3 +152,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     </CartContext.Provider>
   );
 };
+
+
+
+

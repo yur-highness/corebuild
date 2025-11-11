@@ -85,7 +85,7 @@ const toggleCart = async (productId: string, quantity: number, variant?: string)
   const handleAddToCart = async(e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
       const quantity = 1;
-    const variant = product.variants;
+      const variant = product.variants;
       const numericPrice = parseFloat(product.price.toString().replace(/[^0-9.]/g, ""));
     addToCart({
       id: product._id,
