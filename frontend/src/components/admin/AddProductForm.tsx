@@ -63,7 +63,11 @@ export const AddProductForm = () => {
       data.append("features", formData.features);
       data.append("specifications", formData.specifications);
 
-      imageFiles.forEach((file) => data.append("images", file));//suspicious
+      // imageFiles.forEach((file) => data.append("images", file));//suspicious
+      imageFiles.forEach((file, index) => {
+  data.append(`image${index + 1}`, file);
+});
+
 
       const response = await axios.post(`${backendUrl}/api/products/add`, data, {
        headers: {
