@@ -21,65 +21,45 @@ interface AppContextType {
   role: string;
   setRole: React.Dispatch<React.SetStateAction<string>>;
   getUserData: () => Promise<void>;
-  currency: string;
+  curreny: string;
   delivery_fee: number;
-  token: string | null;
-  setToken: (t: string | null) => void;
+  token: string;
+
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
+
 
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (!context) {
     throw new Error("useAppContext must be used within an AppContextProvider");
   }
+  
   return context;
 };
 
+
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [role, setRole] = useState("");
-  const [token, setTokenState] = useState<string | null>(null);
 
-  // client-safe wrapper to set token
-  const setToken = (t: string | null) => {
-    if (typeof window !== "undefined") {
-      if (t) {
-        localStorage.setItem("token", t);
-      } else {
-        localStorage.removeItem("token");
-      }
-    }
-    setTokenState(t);
-  };
+  const token: string | null = localStorage.getItem("token")?localStorage.getItem("token"):null;
 
-  // Initialize token from localStorage on client only
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const t = localStorage.getItem("token");
-    if (t) setTokenState(t);
+    localStorage.setItem("token", token || "");
   }, []);
 
-  // Keep axios default Authorization in sync (optional)
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-    }
-  }, [token]);
-
-  // ✅ Automatically include credentials (cookies) for cross-site cookies if needed
+  // ✅ Automatically include credentials (cookies)
   axios.defaults.withCredentials = true;
 
   const getUserData = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/data`, {
-        withCredentials: true, // very important if backend uses cookie auth
+        withCredentials: true, // very important
       });
 
       if (data.success && data.userData) {
@@ -93,24 +73,22 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         if (data?.message) toast.error(data.message);
       }
     } catch (error: any) {
+      // console.error("Error fetching user data:", error);
       setIsLoggedIn(false);
       setUserData(null);
       setRole("");
+      // Only toast if not unauthorized (avoid spamming 401 logs)
       if (error.response?.status !== 401) toast.success("connection #secure");
     }
   };
 
-  // Auto fetch user data on client mount
+  // ✅ Auto fetch user data on mount
   useEffect(() => {
-    // Only run on client
-    if (typeof window === "undefined") return;
     getUserData();
-    // Note: If your backend requires the token header, ensure token is set before calling getUserData
-  }, [/* no deps so runs on mount */]);
+  }, []);
 
-  // persist role to localStorage (client-only)
+  // ✅ Optionally persist login state locally for faster reloads
   useEffect(() => {
-    if (typeof window === "undefined") return;
     if (isLoggedIn && role) {
       localStorage.setItem("userRole", role);
     } else {
@@ -127,10 +105,10 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     role,
     setRole,
     getUserData,
-    currency: "$",
+    curreny: "$",
     delivery_fee: 0,
-    token,
-    setToken,
+    token: token || "",
+
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
