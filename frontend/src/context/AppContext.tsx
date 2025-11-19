@@ -51,7 +51,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     localStorage.setItem("token", token || "");
-  }, [token]);
+  }, []);
 
   // ✅ Automatically include credentials (cookies)
   axios.defaults.withCredentials = true;

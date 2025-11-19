@@ -61,7 +61,7 @@ export const LoginPage = () => {
   }
 
   try {
-    const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
+    const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });   
     if (data.success) {
       setIsLoggedIn?.(true);
 
