@@ -59,11 +59,30 @@ export const AddProductForm = () => {
       data.append("category", formData.category);
       data.append("currentPrice", formData.currentPrice);
       data.append("originalPrice", formData.originalPrice);
-      data.append("variants", formData.variants);
-      data.append("features", formData.features);
-      data.append("specifications", formData.specifications);
+    data.append("specifications", JSON.stringify(formData.specifications.split("\n")));
+data.append("features", JSON.stringify(formData.features.split("\n")));
+data.append(
+  "variants",
+  JSON.stringify(
+    formData.variants
+      .split("\n")
+      .map(v => v.trim())
+      .filter(v => v.length > 0) // remove empty lines
+      .map(v => ({
+        name: v,
+        price: Number(formData.price),
+        available: true,
+      }))
+  )
+);
 
-      imageFiles.forEach((file) => data.append("image", file));//suspicious
+
+
+      // imageFiles.forEach((file) => data.append("image", file));  //suspicious
+      imageFiles.forEach((file, index) => {
+          data.append(`image${index + 1}`, file);
+        });
+
 
       const response = await axios.post(`${backendUrl}/api/products/add`, data, {
        headers: {
@@ -145,7 +164,7 @@ export const AddProductForm = () => {
             <Textarea
               id="specifications"
               placeholder="Enter product specifications"
-              value={formData.description}
+              value={formData.specifications}
               onChange={(e) => handleInputChange("specifications", e.target.value)}
               className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
               required
@@ -156,7 +175,7 @@ export const AddProductForm = () => {
             <Textarea
               id="variants"
               placeholder="Enter product variants"
-              value={formData.description}
+              value={formData.variants}
               onChange={(e) => handleInputChange("variants", e.target.value)}
               className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
               required
@@ -168,7 +187,7 @@ export const AddProductForm = () => {
             <Textarea
               id="features"
               placeholder="Enter product features"
-              value={formData.description}
+              value={formData.features}
               onChange={(e) => handleInputChange("features", e.target.value)}
               className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
               required

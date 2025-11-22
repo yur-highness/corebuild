@@ -12,11 +12,20 @@ export const createProduct = async (req, res) => {
       price ,
       originalPrice ,
       currentPrice,
-      description,
-      specifications,
-      features,
-      variants,
+      description
     } = req.body;
+
+    const parseJSONArray = (input) => {
+  try {
+    return JSON.parse(input);
+  } catch {
+    return [];
+  }
+};
+
+const variants = parseJSONArray(req.body.variants);
+const features = parseJSONArray(req.body.features);
+const specifications = parseJSONArray(req.body.specifications);
 
 
 

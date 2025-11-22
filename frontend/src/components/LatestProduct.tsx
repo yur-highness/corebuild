@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 interface Product {
-  id: number;
+  _id: number;
   name: string;
   category: string;
   price: string;
@@ -62,7 +62,7 @@ export const LatestProducts = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {productsList.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>

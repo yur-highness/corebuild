@@ -31,7 +31,8 @@ const adminAuth = async (req, res, next) => {
       id: decodedToken.id,
       email: decodedToken.email,
       role: decodedToken.role,
-    };
+      token: decodedToken 
+       };
 
     next(); // ✅ allow access
   } catch (error) {

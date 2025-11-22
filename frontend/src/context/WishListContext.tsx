@@ -13,7 +13,12 @@ export interface WishlistItem {
   description: string;
   specifications: string[];
   features: string[];
-  variants: string;
+  variants: { 
+  name: string; 
+  price: number; 
+  available: boolean 
+}[];
+
   currentPrice: number;
 
 }
@@ -21,8 +26,8 @@ export interface WishlistItem {
 interface WishlistContextType {
   items: WishlistItem[];
   addToWishlist: (product: WishlistItem) => void;
-  removeFromWishlist: (id: string) => void;
-  isInWishlist: (id: string) => boolean;
+  removeFromWishlist: (_id: string) => void;
+  isInWishlist: (_id: string) => boolean;
   getTotalItems: () => number;
 }
 
